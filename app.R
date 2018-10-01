@@ -22,7 +22,8 @@ ui <- fluidPage(
         selectInput("dist",label=h4("Distribution"),
                     choices=c("Binomial" = "binom", 
                               "Geometric" = "geom",
-                              "Negative Binomial" = "nbinom"),
+                              "Negative Binomial" = "nbinom",
+                              "Poisson" = "pois"),
                     selected="binom"),
         
         conditionalPanel(condition = "input.dist=='binom'",
@@ -40,7 +41,11 @@ ui <- fluidPage(
         conditionalPanel(condition = "input.dist=='nbinom'",
                          numericInput("p2.nbinom","Prob of success: p",0.5,min=0,max=1)),
         conditionalPanel(condition = "input.dist=='nbinom'",
-                         numericInput("p3.nbinom","maximum shown", 10,min=10))
+                         numericInput("p3.nbinom","maximum shown", 10,min=10)),
+        conditionalPanel(condition = "input.dist=='pois'",
+                         numericInput("p1.pois","lambda", 1,min = 0)),
+        conditionalPanel(condition = "input.dist=='pois'",
+                         numericInput("p2.pois","maximum shown", 10,min = 10))
       ),
       
       # Show a plot of the generated distribution
@@ -69,6 +74,11 @@ server <- function(input, output) {
     if(input$dist == "nbinom")
     {
       g1 = qplot(as.factor((input$p1.nbinom):(input$p3.nbinom)), dnbinom(0:(input$p3.nbinom - input$p1.nbinom) ,size = input$p1.nbinom ,prob = input$p2.nbinom), geom = "col",xlab = "x",ylab="p(x)")
+    }
+    
+    if(input$dist == "pois")
+    {
+      g1 = qplot(as.factor(0:(input$p2.pois)), dpois(0:input$p2.pois ,lambda = input$p1.pois), geom = "col",xlab = "x",ylab="p(x)")
     }
     
     print(g1)
